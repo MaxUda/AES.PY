@@ -33,6 +33,19 @@ def print_state(state):
             print(state[i][j], end=' ')
         print()'''
 
+Rcon = [
+		[0x01, 0x00, 0x00, 0x00],
+		[0x02, 0x00, 0x00, 0x00],
+		[0x04, 0x00, 0x00, 0x00],
+		[0x08, 0x00, 0x00, 0x00],
+		[0x10, 0x00, 0x00, 0x00],
+		[0x20, 0x00, 0x00, 0x00],
+		[0x40, 0x00, 0x00, 0x00],
+		[0x80, 0x00, 0x00, 0x00],
+		[0x1b, 0x00, 0x00, 0x00],
+		[0x36, 0x00, 0x00, 0x00]
+]
+
 sbox = [
         0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
         0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,
@@ -169,23 +182,75 @@ def cypherRoundInv(state, round_key):
 	shiftRowsInv(state)
 	subBytesInv(state)
 
+def encryptBlock(block, key_scedule):
+	state = block
+	addRoundKey(state, key_scedule[0])
+	for i in range(1, 9):
+		cypherRound(state, key_scedule[i])
+	subBytes(state)
+	shiftRows(state)
+	addRoundKey(state, key_scedule[9])
+	return state
+
+def decryptBlock(block, key_scedule):
+	state = block
+	addRoundKey(state, key_scedule[9]) 
+	shiftRowsInv(state)
+	subBytesInv(state)
+	i = 8
+	while i >= 1:
+		cypherRoundInv(state, key_scedule[i])
+		i-=1
+	addRoundKey(state, key_scedule[0])
+	return state
+
+def getNewFirstColumn(key, roundx):
+	new_column = []
+	for i in range(len(key)):
+		if i%4 == 3:
+			new_column.append(key[i])
+	tmp = new_column[0]
+	new_column[0] = new_column[3]
+	new_column[3] = tmp
+	new_culumn = subBytes(new_column)
+	first_column = []
+	for i in range(len(key)):
+		if i%4 == 0:
+			first_column.append(key[i])
+	for i in range(len(new_column)):
+		new_column[i] ^= first_column[i];
+	for i in range(len(new_column)):
+		new_column[i] ^= Rcon[roundx][i]
+	return new_column
+
+def getRoundKey(key, roundx):
+	new_column = getNewFirstColumn(key, roundx);
+	new_key = [0]*16
+	for i in range(len(new_key)):
+		if i%4 == 0:
+			new_key[i] = new_column[int(i/4)]
+		else:
+			new_key[i] = key[i]^new_key[i-1]
+	return new_key	
+
+def makeKeyScedule(key):
+	key_scedule = [None]*10
+	key_scedule[0] = key;
+	for i in range(1, 10):
+		key_scedule[i] = getRoundKey(key_scedule[i-1], i)
+	return key_scedule
+
 def main():
     income = input_single_block()
-    print(income[0])
     state = list(income[0])
     state = list(bytes(income[0], 'ascii'))
     key = list(bytes(income[1], 'ascii'))
+    key_scedule = makeKeyScedule(key)
     print(state)
-    cypherRound(state, key)
+    state = encryptBlock(state, key_scedule)
     print(state)
-    cypherRoundInv(state, key)
+    state = decryptBlock(state, key_scedule)
     print(state)
-    
-    '''print(state)
-    state = sub_bytes(state)
-    print(state)
-    state = sub_bytes_inv(state)
-    print(state)'''
 
 main()
 
