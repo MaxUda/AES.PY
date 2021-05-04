@@ -126,7 +126,6 @@ def addRoundKey(state, roundKey):
     for i in range(len(state)):
         state[i] = state[i]^roundKey[i]
 
-#паста, хз как оно работает
 def galuaMultipy(a, b):
     p = 0
     hiBitSet = 0
@@ -204,6 +203,7 @@ def decryptBlock(block, key_scedule):
 	addRoundKey(state, key_scedule[0])
 	return state
 
+'''================================key scedule======================================'''
 def getNewFirstColumn(key, roundx):
 	new_column = []
 	for i in range(len(key)):
@@ -239,6 +239,9 @@ def makeKeyScedule(key):
 	for i in range(1, 10):
 		key_scedule[i] = getRoundKey(key_scedule[i-1], i)
 	return key_scedule
+'''================================key scedule======================================'''
+
+
 
 def main():
     income = input_single_block()
@@ -247,10 +250,19 @@ def main():
     key = list(bytes(income[1], 'ascii'))
     key_scedule = makeKeyScedule(key)
     print(state)
+    for item in state:
+    	print(chr(item), end='')
+    print("\n")
     state = encryptBlock(state, key_scedule)
     print(state)
+    for item in state:
+    	print(chr(item), end='')
+    print("\n")
     state = decryptBlock(state, key_scedule)
     print(state)
+    for item in state:
+    	print(chr(item), end='')
+    print("\n")
 
 main()
 
