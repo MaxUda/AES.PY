@@ -34,16 +34,16 @@ def print_state(state):
         print()'''
 
 Rcon = [
-		[0x01, 0x00, 0x00, 0x00],
-		[0x02, 0x00, 0x00, 0x00],
-		[0x04, 0x00, 0x00, 0x00],
-		[0x08, 0x00, 0x00, 0x00],
-		[0x10, 0x00, 0x00, 0x00],
-		[0x20, 0x00, 0x00, 0x00],
-		[0x40, 0x00, 0x00, 0x00],
-		[0x80, 0x00, 0x00, 0x00],
-		[0x1b, 0x00, 0x00, 0x00],
-		[0x36, 0x00, 0x00, 0x00]
+        [0x01, 0x00, 0x00, 0x00],
+        [0x02, 0x00, 0x00, 0x00],
+        [0x04, 0x00, 0x00, 0x00],
+        [0x08, 0x00, 0x00, 0x00],
+        [0x10, 0x00, 0x00, 0x00],
+        [0x20, 0x00, 0x00, 0x00],
+        [0x40, 0x00, 0x00, 0x00],
+        [0x80, 0x00, 0x00, 0x00],
+        [0x1b, 0x00, 0x00, 0x00],
+        [0x36, 0x00, 0x00, 0x00]
 ]
 
 sbox = [
@@ -99,28 +99,40 @@ def swap(i1, i2, state):
     state[i2] = tmp
 
 def shiftRows(state):
-    swap(4, 7, state);
-    swap(4, 5, state);
-    swap(5, 6, state);
+    swap(4, 7, state)
+    swap(4, 5, state)
+    swap(5, 6, state)
+    '''swap(4, 5, state)
+    swap(5, 6, state)
+    swap(6, 7, state)'''
 
-    swap(8, 10, state);
-    swap(9, 11, state);
+    swap(8, 10, state)
+    swap(9, 11, state)
 
-    swap(12, 15, state);
-    swap(13, 15, state);
-    swap(14, 15, state);
+    swap(12, 15, state)
+    swap(13, 15, state)
+    swap(14, 15, state)
+    '''swap(14, 15, state)
+    swap(13, 14, state)
+    swap(12, 13, state)'''
 
 def shiftRowsInv(state):
-    swap(4, 7, state);
-    swap(6, 7, state);
-    swap(5, 6, state);
+    swap(4, 7, state)
+    swap(6, 7, state)
+    swap(5, 6, state)
+    '''swap(6, 7, state)
+    swap(5, 6, state)
+    swap(4, 5, state)'''
 
-    swap(8, 10, state);
-    swap(9, 11, state);
+    swap(8, 10, state)
+    swap(9, 11, state)
 
-    swap(12, 15, state);
-    swap(12, 14, state);
-    swap(12, 13, state);
+    swap(12, 15, state)
+    swap(12, 14, state)
+    swap(12, 13, state)
+    '''swap(12, 13, state)
+    swap(13, 14, state)
+    swap(14, 15, state)'''
 
 def addRoundKey(state, roundKey):
     for i in range(len(state)):
@@ -148,6 +160,10 @@ def mixColumn(state, i, tmp):
     state[i2] = galuaMultipy(tmp[i1], 1)^galuaMultipy(tmp[i2], 2)^galuaMultipy(tmp[i3], 3)^galuaMultipy(tmp[i4], 1)
     state[i3] = galuaMultipy(tmp[i1], 1)^galuaMultipy(tmp[i2], 1)^galuaMultipy(tmp[i3], 2)^galuaMultipy(tmp[i4], 3)
     state[i4] = galuaMultipy(tmp[i1], 3)^galuaMultipy(tmp[i2], 1)^galuaMultipy(tmp[i3], 1)^galuaMultipy(tmp[i4], 2)
+    '''state[i1] = galuaMultipy(tmp[i1], 2)^galuaMultipy(tmp[i2], 1)^galuaMultipy(tmp[i3], 1)^galuaMultipy(tmp[i4], 3)
+    state[i2] = galuaMultipy(tmp[i1], 3)^galuaMultipy(tmp[i2], 2)^galuaMultipy(tmp[i3], 1)^galuaMultipy(tmp[i4], 1)
+    state[i3] = galuaMultipy(tmp[i1], 1)^galuaMultipy(tmp[i2], 3)^galuaMultipy(tmp[i3], 2)^galuaMultipy(tmp[i4], 1)
+    state[i4] = galuaMultipy(tmp[i1], 1)^galuaMultipy(tmp[i2], 1)^galuaMultipy(tmp[i3], 3)^galuaMultipy(tmp[i4], 2)'''
 
 def mixColumns(state):
     tmp = copy(state)
@@ -163,6 +179,10 @@ def mixColumnInv(state, i, tmp):
     state[i2] = galuaMultipy(tmp[i1], 9)^galuaMultipy(tmp[i2], 14)^galuaMultipy(tmp[i3], 11)^galuaMultipy(tmp[i4], 13)
     state[i3] = galuaMultipy(tmp[i1], 13)^galuaMultipy(tmp[i2], 9)^galuaMultipy(tmp[i3], 14)^galuaMultipy(tmp[i4], 11)
     state[i4] = galuaMultipy(tmp[i1], 11)^galuaMultipy(tmp[i2], 13)^galuaMultipy(tmp[i3], 9)^galuaMultipy(tmp[i4], 14)
+    '''state[i1] = galuaMultipy(tmp[i1], 14)^galuaMultipy(tmp[i2], 9)^galuaMultipy(tmp[i3], 13)^galuaMultipy(tmp[i4], 11)
+    state[i2] = galuaMultipy(tmp[i1], 11)^galuaMultipy(tmp[i2], 14)^galuaMultipy(tmp[i3], 9)^galuaMultipy(tmp[i4], 13)
+    state[i3] = galuaMultipy(tmp[i1], 13)^galuaMultipy(tmp[i2], 11)^galuaMultipy(tmp[i3], 14)^galuaMultipy(tmp[i4], 9)
+    state[i4] = galuaMultipy(tmp[i1], 9)^galuaMultipy(tmp[i2], 13)^galuaMultipy(tmp[i3], 11)^galuaMultipy(tmp[i4], 14)'''
 
 def mixColumnsInv(state):
     tmp = copy(state)
@@ -170,98 +190,130 @@ def mixColumnsInv(state):
         mixColumnInv(state, i, tmp)
 
 def cypherRound(state, round_key):
-	subBytes(state)
-	shiftRows(state)
-	mixColumns(state)
-	addRoundKey(state, round_key)
+    subBytes(state)
+    shiftRows(state)
+    mixColumns(state)
+    addRoundKey(state, round_key)
 
 def cypherRoundInv(state, round_key):
-	addRoundKey(state, round_key)
-	mixColumnsInv(state)
-	shiftRowsInv(state)
-	subBytesInv(state)
+    addRoundKey(state, round_key)
+    mixColumnsInv(state)
+    shiftRowsInv(state)
+    subBytesInv(state)
 
 def encryptBlock(block, key_scedule):
-	state = block
-	addRoundKey(state, key_scedule[0])
-	for i in range(1, 9):
-		cypherRound(state, key_scedule[i])
-	subBytes(state)
-	shiftRows(state)
-	addRoundKey(state, key_scedule[9])
-	return state
+    state = block
+    addRoundKey(state, key_scedule[0])
+    for i in range(1, 9):
+        cypherRound(state, key_scedule[i])
+    subBytes(state)
+    shiftRows(state)
+    addRoundKey(state, key_scedule[9])
+    return state
 
 def decryptBlock(block, key_scedule):
-	state = block
-	addRoundKey(state, key_scedule[9]) 
-	shiftRowsInv(state)
-	subBytesInv(state)
-	i = 8
-	while i >= 1:
-		cypherRoundInv(state, key_scedule[i])
-		i-=1
-	addRoundKey(state, key_scedule[0])
-	return state
+    state = block
+    addRoundKey(state, key_scedule[9]) 
+    shiftRowsInv(state)
+    subBytesInv(state)
+    i = 8
+    while i >= 1:
+        cypherRoundInv(state, key_scedule[i])
+        i-=1
+    addRoundKey(state, key_scedule[0])
+    return state
 
 '''================================key scedule======================================'''
 def getNewFirstColumn(key, roundx):
-	new_column = []
-	for i in range(len(key)):
-		if i%4 == 3:
-			new_column.append(key[i])
-	tmp = new_column[0]
-	new_column[0] = new_column[3]
-	new_column[3] = tmp
-	new_culumn = subBytes(new_column)
-	first_column = []
-	for i in range(len(key)):
-		if i%4 == 0:
-			first_column.append(key[i])
-	for i in range(len(new_column)):
-		new_column[i] ^= first_column[i];
-	for i in range(len(new_column)):
-		new_column[i] ^= Rcon[roundx][i]
-	return new_column
+    new_column = []
+    for i in range(len(key)):
+        if i%4 == 3:
+            new_column.append(key[i])
+    '''tmp = new_column[0]
+    new_column[0] = new_column[3]
+    new_column[3] = tmp'''
+    swap(0, 1, new_column)
+    swap(1, 2, new_column)
+    swap(2, 3, new_column)
+    new_culumn = subBytes(new_column)
+    first_column = []
+    for i in range(len(key)):
+        if i%4 == 0:
+            first_column.append(key[i])
+    for i in range(len(new_column)):
+        new_column[i] ^= first_column[i];
+    for i in range(len(new_column)):
+        new_column[i] ^= Rcon[roundx][i]
+    return new_column
 
 def getRoundKey(key, roundx):
-	new_column = getNewFirstColumn(key, roundx);
-	new_key = [0]*16
-	for i in range(len(new_key)):
-		if i%4 == 0:
-			new_key[i] = new_column[int(i/4)]
-		else:
-			new_key[i] = key[i]^new_key[i-1]
-	return new_key	
+    new_column = getNewFirstColumn(key, roundx);
+    new_key = [0]*16
+    for i in range(len(new_key)):
+        if i%4 == 0:
+            new_key[i] = new_column[int(i/4)]
+    for i in range(1, 16, 4):
+    	new_key[i] = key[i]^new_key[i-1]
+    for i in range(2, 16, 4):
+    	new_key[i] = key[i]^new_key[i-1]
+    for i in range(3, 16, 4):
+    	new_key[i] = key[i]^new_key[i-1]
+    for item in new_key:
+        print(chr(item), end='')
+    print()
+    return new_key    
 
 def makeKeyScedule(key):
-	key_scedule = [None]*10
-	key_scedule[0] = key;
-	for i in range(1, 10):
-		key_scedule[i] = getRoundKey(key_scedule[i-1], i)
-	return key_scedule
+    key_scedule = [0]*10
+    key_scedule[0] = key;
+    for i in range(1, 10):
+        key_scedule[i] = getRoundKey(key_scedule[i-1], i-1)
+    return key_scedule
 '''================================key scedule======================================'''
 
+def rearrange(inp):
+    new_input = [0]*16
+    k = 0
+    for i in range(0, 4):
+        for j in range(i, 16, 4):
+            new_input[j] = inp[k]
+            k+=1
+    return new_input
+
+def rearrange_inv(inp):
+    new_input = [0]*16
+    k = 0
+    for i in range(0, 4):
+        for j in range(i, 16, 4):
+            new_input[k] = inp[j]
+            k+=1
+    print(new_input)
+    return new_input
 
 
 def main():
     income = input_single_block()
     state = list(income[0])
     state = list(bytes(income[0], 'ascii'))
+    state = rearrange(state)
     key = list(bytes(income[1], 'ascii'))
+    key = rearrange(key)
     key_scedule = makeKeyScedule(key)
     print(state)
     for item in state:
-    	print(chr(item), end='')
+        print(chr(item), end='')
     print("\n")
     state = encryptBlock(state, key_scedule)
+    print("Cypher: ", end = ' ')
     print(state)
     for item in state:
-    	print(chr(item), end='')
+        print(chr(item), end='')
     print("\n")
     state = decryptBlock(state, key_scedule)
-    print(state)
+    print("Decypher: ", end = ' ')
+    state = rearrange_inv(state)
     for item in state:
-    	print(chr(item), end='')
+        print(chr(item), end='')
     print("\n")
 
 main()
