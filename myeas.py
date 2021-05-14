@@ -196,19 +196,19 @@ def cypherRoundInv(state, round_key):
 def encryptBlock(block, key_scedule):
     state = block
     addRoundKey(state, key_scedule[0])
-    for i in range(1, 9):
+    for i in range(1, 10):
         cypherRound(state, key_scedule[i])
     subBytes(state)
     shiftRows(state)
-    addRoundKey(state, key_scedule[9])
+    addRoundKey(state, key_scedule[10])
     return state
 
 def decryptBlock(block, key_scedule):
     state = block
-    addRoundKey(state, key_scedule[9]) 
+    addRoundKey(state, key_scedule[10]) 
     shiftRowsInv(state)
     subBytesInv(state)
-    i = 8
+    i = 9
     while i >= 1:
         cypherRoundInv(state, key_scedule[i])
         i-=1
@@ -229,14 +229,9 @@ def getNewFirstColumn(key, roundx):
     for i in range(len(key)):
         if i%4 == 0:
             first_column.append(key[i])
-            s = str(hex(key[i]))
-            s = s.removeprefix('0x')
-            print(s, end = ' ')
-    print()
     for i in range(len(new_column)):
         new_column[i] ^= first_column[i];
     for i in range(len(new_column)):
-        print(str(roundx) + ' ' + str(i))
         new_column[i] ^= Rcon[roundx][i]
     return new_column
 
@@ -286,13 +281,6 @@ def main():
     key = list(bytes(income[1], 'ascii'))
     key = rearrange(key)
     key_scedule = makeKeyScedule(key)
-    for item in key_scedule:
-        tmp = rearrange_inv(item)
-        for sub in tmp:
-            s = str(hex(sub))
-            s = s.removeprefix('0x')
-            print(s, end = ' ')
-        print("\n")
     print(state)
     for item in state:
         print(chr(item), end='')
@@ -300,7 +288,8 @@ def main():
     state = encryptBlock(state, key_scedule)
     print("Cypher: ", end = ' ')
     print(state)
-    for item in state:
+    tmp = rearrange_inv(state)
+    for item in tmp:
         print(chr(item), end='')
     print("\n")
     state = decryptBlock(state, key_scedule)
