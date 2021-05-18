@@ -295,11 +295,11 @@ def get_text(blocks):
     a = []
     for item in blocks:
         a += item
-    a = bytes(a)
+    #a = bytes(a)
     return a
 
 def text_to_blocks(text):
-    text_list_b = list(bytes(text, 'latin-1'))
+    text_list_b = list(bytes(text, 'utf-8'))
     blocks = get_blocks(text_list_b)
     for i in range(len(blocks)):
         blocks[i] = rearrange(blocks[i])
@@ -309,11 +309,14 @@ def text_to_blocks_inv(blocks):
     for i in range(len(blocks)):
         blocks[i] = rearrange_inv(blocks[i])
     text_list_b = get_text(blocks)
-    text = text_list_b.decode('latin-1')
+    for i in range(len(text_list_b)):
+        text_list_b[i] = chr(text_list_b[i])
+    #text = text_list_b.decode('ascii')
+    text = ''.join(text_list_b)
     return text
 
 def key_to_keyscedule(key):
-    key = list(bytes(key, 'latin-1'))
+    key = list(bytes(key, 'utf-8'))
     key = rearrange(key)
     key_scedule = makeKeyScedule(key)
     return key_scedule
@@ -335,13 +338,108 @@ def decrypt_ECB(text, key):
     text = text_to_blocks_inv(blocks)
     return text
 
+'''def main():
+    while True:
+        print("1 - ECB\n2 - CBC\n3 - CFB\n4 - OFB")
+        com1 = int(input())
+        if com1 == 1:
+            print("Encrypt/Decrypt? e/d", end = ' ')
+            com2 = input()
+            if com2[0] == 'e':
+                print("Text: ", end = '')
+                text = input()
+                print("Key: ", end = '')
+                key = input()
+                cyphertext = encrypt_ECB(text, key)
+                print(cyphertext)
+            else:
+                print("Cypherext: ", end = '')
+                cyphertext = input()
+                print("Key: ", end = '')
+                key = input()
+                text = decrypt_ECB(cyphertext, key)
+                print(text)
+        elif com1 == 2:
+            print("Encrypt/Decrypt? e/d", end = ' ')
+            com2 = input()
+            if com2[0] == 'e':
+                print("e")
+            else:
+                print("d")
+        elif com1 == 3:
+            print("Encrypt/Decrypt? e/d", end = ' ')
+            com2 = input()
+            if com2[0] == 'e':
+                print("e")
+            else:
+                print("d")
+        elif com1 == 4:
+            print("Encrypt/Decrypt? e/d", end = ' ')
+            com2 = input()
+            if com2[0] == 'e':
+                print("e")
+            else:
+                print("d")
+        elif com1 == 5:
+            return'''
+
+def encrypt_CBC(text, key, init_vector):
+    blocks = text_to_blocks(text)
+    key_scedule = key_to_keyscedule(key)
+    init_vector = list(bytes(init_vector, 'utf-8'))
+    init_vector = rearrange(init_vector)
+    for i in range(len(blocks)):
+        if i == 0:
+            for j in range(len(blocks[i])):
+                blocks[i][j] = blocks[i][j]^init_vector[j]
+        else:
+            for j in range(len(blocks[i])):
+                blocks[i][j] = blocks[i][j]^blocks[i-1][j]      
+        blocks[i] = encryptBlock(blocks[i], key_scedule)
+    cyphertext = text_to_blocks_inv(blocks)
+    return cyphertext
+
+def encrypt_CFB(text, key, init_vector):
+    blocks = text_to_blocks(text)
+    key_scedule = key_to_keyscedule(key)
+    init_vector = list(bytes(init_vector, 'utf-8'))
+    init_vector = rearrange(init_vector)
+    for i in range(len(blocks)):
+        if i == 0:
+            print(init_vector)
+            init_vector = encryptBlock(init_vector, key_scedule)
+            print(init_vector)
+            for j in range(len(blocks[i])):
+                blocks[i][j] = blocks[i][j]^init_vector[j]
+        else:
+            blocks[i-1] = encryptBlock(blocks[i-1], key_scedule)
+            for j in range(len(blocks[i])):
+                blocks[i][j] = blocks[i][j]^blocks[i-1][j]
+    cyphertext = text_to_blocks_inv(blocks)
+    return cyphertext
+
+def OFB(text, key, init_vector):
+    blocks = text_to_blocks(text)
+    key_scedule = key_to_keyscedule(key)
+    init_vector = list(bytes(init_vector, 'utf-8'))
+    init_vector = rearrange(init_vector)
+    for i in range(len(blocks)):
+        init_vector = encryptBlock(init_vector, key)
+        for j in range(len(blocks[i])):
+            blocks[i][j] = blocks[i][j]^init_vector[j]
+    cyphertext = text_to_blocks_inv(blocks)
+    return cyphertext
+
 def main():
     text = input()
     key = input()
-    cyphertext = encrypt_ECB(text, key)
-    print(cyphertext)
-    text = decrypt_ECB(cyphertext, key)
+    init_vector = input()
+    #cyphertext = encrypt_ECB(text, key)
+    #print(cyphertext)
+    #text = decrypt_ECB(cyphertext, key)
     print(text)
+    cyphertext = encrypt_CFB(text, key, init_vector)
+    print(cyphertext)
     #print(cyphertext)
     #decrytext = decrypt_ECB(cyphertext, key)
     #print(decrytext)

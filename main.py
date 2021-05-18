@@ -1,4 +1,4 @@
-#import myeas
+from myeas import encrypt_ECB, decrypt_ECB
 
 def main():
 	while True:
@@ -8,9 +8,19 @@ def main():
 			print("Encrypt/Decrypt? e/d", end = ' ')
 			com2 = input()
 			if com2[0] == 'e':
-				print("e")
+				print("Text: ", end = '')
+				text = input()
+				print("Key: ", end = '')
+				key = input()
+				cyphertext = encrypt_ECB(text, key)
+				print(cyphertext)
 			else:
-				print("d")
+				print("Cypherext: ", end = '')
+				cyphertext = input()
+				print("Key: ", end = '')
+				key = input()
+				text = decrypt_ECB(cyphertext, key)
+				print(text)
 		elif com1 == 2:
 			print("Encrypt/Decrypt? e/d", end = ' ')
 			com2 = input()
