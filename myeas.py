@@ -272,13 +272,89 @@ def rearrange_inv(inp):
     #print(new_input)
     return new_input
 
+def get_blocks(text):
+    size = len(text)//16;
+    if len(text) % 16 != 0:
+        size += 1
+    blocks = []
+    for i in range(size):
+        blocks.append([])
+    index = 0
+    for i in range(len(text)):
+        blocks[index].append(text[i]);
+        if i % 16 == 15:
+            index += 1;
+    skoka = 0
+    if len(blocks[size - 1]) < 16:
+        for i in range(len(blocks[size - 1]), 16):
+            blocks[size - 1].append(0)
+            #skoka += 1
+    return blocks
+
+def get_text(blocks):
+    a = []
+    for item in blocks:
+        a += item
+    a = bytes(a)
+    return a
+
+def text_to_blocks(text):
+    text_list_b = list(bytes(text, 'latin-1'))
+    blocks = get_blocks(text_list_b)
+    for i in range(len(blocks)):
+        blocks[i] = rearrange(blocks[i])
+    return blocks
+
+def text_to_blocks_inv(blocks):
+    for i in range(len(blocks)):
+        blocks[i] = rearrange_inv(blocks[i])
+    text_list_b = get_text(blocks)
+    text = text_list_b.decode('latin-1')
+    return text
+
+def key_to_keyscedule(key):
+    key = list(bytes(key, 'latin-1'))
+    key = rearrange(key)
+    key_scedule = makeKeyScedule(key)
+    return key_scedule
+
+def encrypt_ECB(text, key):
+    blocks = text_to_blocks(text)
+    key_scedule = key_to_keyscedule(key)
+    for i in range(len(blocks)):
+        blocks[i] = encryptBlock(blocks[i], key_scedule)
+    cyphertext = text_to_blocks_inv(blocks)
+    return cyphertext
+    
+
+def decrypt_ECB(text, key):
+    blocks = text_to_blocks(text)
+    key_scedule = key_to_keyscedule(key)
+    for i in range(len(blocks)):
+        blocks[i] = decryptBlock(blocks[i], key_scedule)
+    text = text_to_blocks_inv(blocks)
+    return text
 
 def main():
+    text = input()
+    key = input()
+    cyphertext = encrypt_ECB(text, key)
+    print(cyphertext)
+    text = decrypt_ECB(cyphertext, key)
+    print(text)
+    #print(cyphertext)
+    #decrytext = decrypt_ECB(cyphertext, key)
+    #print(decrytext)
+
+main()
+
+'''def main():
     income = input_single_block()
     state = list(income[0])
-    state = list(bytes(income[0], 'ascii'))
+    state = bytes(income[0], 'utf-8')
     state = rearrange(state)
-    key = list(bytes(income[1], 'ascii'))
+    key = bytes(income[1], 'utf-8')
+    print(key)
     key = rearrange(key)
     key_scedule = makeKeyScedule(key)
     print(state)
@@ -299,7 +375,7 @@ def main():
         print(chr(item), end='')
     print("\n")
 
-main()
+main()'''
 
 
 
