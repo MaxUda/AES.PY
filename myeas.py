@@ -299,7 +299,7 @@ def get_text(blocks):
     return a
 
 def text_to_blocks(text):
-    text_list_b = list(bytes(text, 'utf-8'))
+    text_list_b = list(bytes(text, 'latin-1'))
     blocks = get_blocks(text_list_b)
     for i in range(len(blocks)):
         blocks[i] = rearrange(blocks[i])
@@ -399,10 +399,27 @@ def encrypt_CBC(text, key, init_vector):
     cyphertext = text_to_blocks_inv(blocks)
     return cyphertext
 
-def encrypt_CFB(text, key, init_vector):
+def decrypt_CBC(text, key, init_vector):
     blocks = text_to_blocks(text)
     key_scedule = key_to_keyscedule(key)
     init_vector = list(bytes(init_vector, 'utf-8'))
+    init_vector = rearrange(init_vector)
+    for i in range(len(blocks)):
+        blocks[i] = decryptBlock(blocks[i], key_scedule)
+        if i == 0:
+            for j in range(len(blocks[i])):
+                blocks[i][j] = blocks[i][j]^init_vector[j]
+        else:
+            for j in range(len(blocks[i])):
+                blocks[i][j] = blocks[i][j]^blocks[i-1][j]
+    cyphertext = text_to_blocks_inv(blocks)
+    return cyphertext        
+
+
+def encrypt_CFB(text, key, init_vector):
+    blocks = text_to_blocks(text)
+    key_scedule = key_to_keyscedule(key)
+    init_vector = list(bytes(init_vector, 'ascii'))
     init_vector = rearrange(init_vector)
     for i in range(len(blocks)):
         if i == 0:
@@ -434,12 +451,16 @@ def main():
     text = input()
     key = input()
     init_vector = input()
+    iv = init_vector
     #cyphertext = encrypt_ECB(text, key)
     #print(cyphertext)
     #text = decrypt_ECB(cyphertext, key)
     print(text)
-    cyphertext = encrypt_CFB(text, key, init_vector)
+    cyphertext = encrypt_CBC(text, key, init_vector)
     print(cyphertext)
+    text = decrypt_CBC(cyphertext, key, init_vector)
+    print(text)
+    #print(text)
     #print(cyphertext)
     #decrytext = decrypt_ECB(cyphertext, key)
     #print(decrytext)
