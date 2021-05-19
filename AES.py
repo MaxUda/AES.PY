@@ -454,7 +454,7 @@ def main():
         text = OFB(cyphertext, key, init_vector)
         print("Decypher: " + text)
         print("==================================================================")
-  
+        
 main()
 
 
