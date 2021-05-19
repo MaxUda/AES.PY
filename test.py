@@ -2,7 +2,7 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 
 output_file = 'encrypted.bin' # Output file
-data = b'1234567890123456' # Must be a bytes object
+data = b'12345678901234561' # Must be a bytes object
 key = b'1234567890123456' # The key you generated
 
 # Create cipher object and encrypt the data
