@@ -360,13 +360,17 @@ def decrypt_CBC(text, key, init_vector):
     init_vector = list(bytes(init_vector, 'latin-1'))
     init_vector = rearrange(init_vector)
     for i in range(len(blocks)):
-        blocks[i] = decryptBlock(blocks[i], key_scedule)
         if i == 0:
+            tmp_block = copy(blocks[i])
+            blocks[i] = decryptBlock(blocks[i], key_scedule)
             for j in range(len(blocks[i])):
                 blocks[i][j] = blocks[i][j]^init_vector[j]
         else:
+            tmp_block_2 = copy(blocks[i])
+            blocks[i] = decryptBlock(blocks[i], key_scedule)
             for j in range(len(blocks[i])):
-                blocks[i][j] = blocks[i][j]^blocks[i-1][j]
+                blocks[i][j] = blocks[i][j]^tmp_block[j]
+            tmp_block = copy(tmp_block_2)
     cyphertext = text_to_blocks_inv(blocks)
     return cyphertext        
 
@@ -430,31 +434,43 @@ def main():
         print("IV(16 symbols, no safety check): ", end = '')
         init_vector = input()
         print("EBC===============================================")
-        print("Plain: " + text)
-        cyphertext = encrypt_ECB(text, key)
+        tmp_text = copy(text)
+        tmp_key = copy(key)
+        tmp_IV = copy(init_vector)
+        print("Plain: " + tmp_text)
+        cyphertext = encrypt_ECB(tmp_text, tmp_key)
         print("Cypher: " + cyphertext)
-        text = decrypt_ECB(cyphertext, key)
-        print("Decypher: " + text)
+        tmp_text = decrypt_ECB(cyphertext, tmp_key)
+        print("Decypher: " + tmp_text)
         print("CBC===============================================")
-        print("Plain: " + text)
-        cyphertext = encrypt_CBC(text, key, init_vector)
+        tmp_text = copy(text)
+        tmp_key = copy(key)
+        tmp_IV = copy(init_vector)
+        print("Plain: " + tmp_text)
+        cyphertext = encrypt_CBC(tmp_text, tmp_key, tmp_IV)
         print("Cypher: " + cyphertext)
-        text = decrypt_CBC(cyphertext, key, init_vector)
-        print("Decypher: " + text)
+        tmp_text = decrypt_CBC(cyphertext, tmp_key, tmp_IV)
+        print("Decypher: " + tmp_text)
         print("CFB===============================================")
-        print("Plain: " + text)
-        cyphertext = encrypt_CFB(text, key, init_vector)
+        tmp_text = copy(text)
+        tmp_key = copy(key)
+        tmp_IV = copy(init_vector)
+        print("Plain: " + tmp_text)
+        cyphertext = encrypt_CFB(tmp_text, tmp_key, tmp_IV)
         print("Cypher: " + cyphertext)
-        text = decrypt_CFB(cyphertext, key, init_vector)
-        print("Decypher: " + text)
+        tmp_text = decrypt_CFB(cyphertext, tmp_key, tmp_IV)
+        print("Decypher: " + tmp_text)
         print("OFB===============================================")
-        print("Plain: " + text)
-        cyphertext = OFB(text, key, init_vector)
+        tmp_text = copy(text)
+        tmp_key = copy(key)
+        tmp_IV = copy(init_vector)
+        print("Plain: " + tmp_text)
+        cyphertext = OFB(tmp_text, tmp_key, tmp_IV)
         print("Cypher: " + cyphertext)
-        text = OFB(cyphertext, key, init_vector)
-        print("Decypher: " + text)
+        tmp_text = OFB(cyphertext, tmp_key, tmp_IV)
+        print("Decypher: " + tmp_text)
         print("==================================================================")
-        
+
 main()
 
 
